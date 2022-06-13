@@ -1,0 +1,115 @@
+= User Manual
+
+== Purpose
+
+The main purpose of _dmtex-math-expression-core_ component is parsing (compiling) and evaluating of mathematical expressions.
+It supports numeric literals variables and functions. Expressions can be simplified and differentiated.
+
+== Code samples
+
+[plantuml,activity,svg]
+....
+(*) --> "Instantiate Parser"
+--> "Compile string expression"
+--> "Evaluate compiled expression"
+--> (*)
+....
+
+=== Simple one, just constant expression
+
+[source,java]
+----
+class Sample {
+  public static void main(String[] args) {
+    Parser parser = new Parser(); //<1>
+    Expression expression = parser.compile("1+2"); //<2>
+    double result = expression.evaluate(); //<3>
+    System.out.println(result);
+  }
+}
+----
+<1> Create new instance of Parser class. It can be reused for compiling of several expressions.
+<2> Compile string math expression.
+<3> Evaluate compiled expression.
+
+=== Expressions and variables
+
+[source,java]
+----
+class Sample {
+  public static void main(String[] args) {
+    Parser parser = new Parser();
+    Expression expression = parser.compile("(x+y)/2", Set.of("x", "y")); //<1>
+    double result = expression.evaluate(Map.of("x", 1, "y", 3)); //<2>
+    System.out.println(result);
+  }
+}
+----
+<1> Pass collection of variable names as second argument of compile method.
+Compiled expression can be evaluated for varios arguments
+<2> Pass *Map* of variable names and variable values to evaluate expression.
+
+=== Functions
+
+[source,java]
+----
+class Sample {
+  public static void main(String[] args) {
+    Parser parser = new Parser();
+    Expression expression = parser.compile("sin(pi/2)");
+    double result = expression.evaluate();
+    System.out.println(result);
+  }
+}
+----
+
+List of supported constants:
+
+* `e`
+* `pi`
+
+List of supported functions:
+
+* `sqrt(x)`
+* `exp(x)`
+* `ln(x)` (log) - base e
+* `log(x)` (log10) - base 10
+* `sign(x)` (signum)
+* `abs(x)`
+* `sin(x)`
+* `cos(x)`
+* `tg(x)` (tan)
+* `ctg(x)` (reverse tan)
+* `arcsin(x)` (asin)
+* `arccos(x)` (acos)
+* `arctg(x)` (atan)
+* `sh(x)` (sinh)
+* `ch(x)` (cosh)
+* `th(x)` (tanh)
+
+=== Simplification
+
+[source,java]
+----
+class Sample {
+  public static void main(String[] args) {
+    Parser parser = new Parser();
+    Expression expression = parser.compile("1+2");
+    System.out.println(expression.simplify());
+  }
+}
+----
+
+=== Differentiation
+
+[source,java]
+----
+class Sample {
+  public static void main(String[] args) {
+    Parser parser = new Parser();
+    Expression expression = parser.compile("sin(x)", Set.of("x"));
+    Expression derivative = expression.derivative("x");
+    System.out.println(derivative);
+  }
+}
+----
